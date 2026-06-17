@@ -229,7 +229,7 @@ GitHub will generate a public site.
 Replace the placeholder below after deployment:
 
 ```text
-https://YOUR-GITHUB-PAGES-URL-HERE
+https://trethacker.github.io/sudoku/
 ```
 
 ---
