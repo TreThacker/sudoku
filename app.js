@@ -2,13 +2,13 @@
 App Title: Sudoku
 Credits: Tre Thacker
 Year Created: 2026
-Version: 1.00
+Version: 1.10
 Dedication: None
 */
 
 /* <------------------------------------------------
       CHANGELOG
-			Version 1.10 - Full screen vieweing support and coloring fixes.
+			Version 1.10 - Full screen vieweing support and color fixes.
       Version 1.00 - Initial game creation.
    -------------------------------------------------> */
 
@@ -18,7 +18,7 @@ Dedication: None
 const APP_TITLE = "Sudoku";
 const APP_CREDITS = "Tre Thacker";
 const APP_YEAR = "2026";
-const APP_VERSION = "1.00";
+const APP_VERSION = "1.10";
 const APP_DEDICATION = "None";
 const DATABASE_NAME = "SudokuDatabase";
 const DATABASE_VERSION = 1;

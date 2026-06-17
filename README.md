@@ -24,6 +24,7 @@ Sudoku is a browser-based puzzle game that automatically saves your progress and
 * Pause and Resume functionality
 * Keyboard support
 * Mouse and touch support
+* Full screen support
 
 ### ⚙️ Customizable Options
 
@@ -307,7 +308,7 @@ Sudoku will appear on the Home Screen and launch in full-screen mode.
 
 | Item    | Value   |
 | ------- | ------- |
-| Version | 1.00    |
+| Version | 1.10    |
 | Status  | Release |
 | Year    | 2026    |
 
