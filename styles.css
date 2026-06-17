@@ -430,7 +430,7 @@ button:active:not(:disabled) {
 
 .board-pause-wrapper {
 	position: relative;
-	width: min(100%, 60vh, 560px);
+	width: min(100%, calc(100vh - 230px), 560px);
 	max-height: 100%;
 	aspect-ratio: 1 / 1;
 }
@@ -949,6 +949,6 @@ button:active:not(:disabled) {
 	}
 
 	.board-pause-wrapper {
-		width: min(100%, 72vh, 700px);
+		width: min(100%, 60vh, 560px);
 	}
 }
