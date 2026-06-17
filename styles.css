@@ -8,7 +8,7 @@ Dedication: None
 
 /* <------------------------------------------------
       CHANGELOG
-
+			Version 1.10 - Full screen vieweing support and coloring fixes.
       Version 1.00 - Initial game creation.
    -------------------------------------------------> */
 
@@ -56,6 +56,8 @@ body.theme-ocean {
 	--cell-given-bg: #d8f4f7;
 	--cell-selected-bg: #cff8ef;
 	--cell-related-bg: #e4fbff;
+	--button-bg: #087f8c;
+	--button-hover: #055863;
 }
 
 body.theme-sunset {
@@ -70,6 +72,8 @@ body.theme-sunset {
 	--cell-given-bg: #ffe2ce;
 	--cell-selected-bg: #fff0bf;
 	--cell-related-bg: #fff6ee;
+	--button-bg: #c75146;
+	--button-hover: #91372f;
 }
 
 /* <------------------------------------------------
