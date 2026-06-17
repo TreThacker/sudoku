@@ -512,8 +512,10 @@ button:active:not(:disabled) {
 	background: var(--cell-given-bg);
 }
 
-.sudoku-cell.selected {
-	background: var(--cell-selected-bg);
+.sudoku-cell.selected,
+.sudoku-cell:hover {
+	color: #ffffff;
+	background: var(--button-hover);
 }
 
 .sudoku-cell.related {
@@ -522,6 +524,12 @@ button:active:not(:disabled) {
 
 .sudoku-cell.error {
 	background: var(--cell-error-bg);
+}
+
+.sudoku-cell.selected,
+.sudoku-cell.error:hover {
+	color: #ffffff;
+	background: var(--button-hover);
 }
 
 .sudoku-cell.correct {
@@ -803,33 +811,22 @@ button:active:not(:disabled) {
       TABLET SUPPORT
    -------------------------------------------------> */
 @media (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
-	:root {
-		--tablet-selected-bg: #244f9e;
-		--tablet-selected-text: #ffffff;
-	}
-
-	body.theme-ocean {
-		--tablet-selected-bg: #055863;
-		--tablet-selected-text: #ffffff;
-	}
-
-	body.theme-sunset {
-		--tablet-selected-bg: #91372f;
-		--tablet-selected-text: #ffffff;
-	}
-
 	.app-wrapper {
 		padding: clamp(8px, 1.2vh, 14px) clamp(10px, 2vw, 24px);
 	}
 
 	.game-shell {
-		width: min(980px, calc(100vw - 32px));
-		grid-template-columns: 58px minmax(0, 1fr);
+		width: min(1040px, calc(100vw - 32px));
+		grid-template-columns: 58px minmax(0, 1fr) 58px;
 	}
 
 	.side-title {
 		width: 58px;
 		margin-left: 0;
+	}
+
+	.game-area {
+		grid-column: 2;
 	}
 
 	.board-panel {
@@ -839,12 +836,7 @@ button:active:not(:disabled) {
 	.board-pause-wrapper {
 		width: min(100%, 68vh, 640px);
 	}
-
-	.sudoku-cell.selected {
-		color: var(--tablet-selected-text);
-		background: var(--tablet-selected-bg);
-	}
-}	 
+}
 	 
 @media (max-width: 1050px) {
 	.game-area {
