@@ -1,0 +1,880 @@
+/*
+App Title: Sudoku
+Credits: Tre Thacker
+Year Created: 2026
+Version: 1.00
+Dedication: None
+*/
+
+/* <------------------------------------------------
+      CHANGELOG
+
+      Version 1.00 - Initial game creation.
+   -------------------------------------------------> */
+
+/* <------------------------------------------------
+      ROOT THEME VARIABLES
+   -------------------------------------------------> */
+:root {
+	--app-bg: #101827;
+	--shell-bg: rgba(255, 255, 255, 0.92);
+	--panel-bg: rgba(255, 255, 255, 0.82);
+	--modal-bg: #ffffff;
+	--primary: #244f9e;
+	--primary-dark: #17366f;
+	--accent: #f2b705;
+	--text-main: #132033;
+	--text-muted: #596579;
+	--border-light: rgba(19, 32, 51, 0.16);
+	--board-border: #132033;
+	--cell-bg: #ffffff;
+	--cell-given-bg: #e8edf7;
+	--cell-selected-bg: #fff1bf;
+	--cell-related-bg: #edf4ff;
+	--cell-error-bg: #ffdada;
+	--cell-correct-bg: #ddf7e5;
+	--button-bg: #244f9e;
+	--button-text: #ffffff;
+	--button-hover: #17366f;
+	--shadow-strong: 0 22px 45px rgba(0, 0, 0, 0.28);
+	--shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.16);
+	--radius-large: 28px;
+	--radius-medium: 18px;
+	--radius-small: 12px;
+	--app-scale: min(1vw, 1vh);
+}
+
+body.theme-ocean {
+	--app-bg: #062632;
+	--shell-bg: rgba(231, 250, 255, 0.94);
+	--panel-bg: rgba(226, 247, 252, 0.86);
+	--primary: #087f8c;
+	--primary-dark: #055863;
+	--accent: #17c3b2;
+	--text-main: #07313a;
+	--text-muted: #466972;
+	--cell-given-bg: #d8f4f7;
+	--cell-selected-bg: #cff8ef;
+	--cell-related-bg: #e4fbff;
+}
+
+body.theme-sunset {
+	--app-bg: #301121;
+	--shell-bg: rgba(255, 245, 236, 0.94);
+	--panel-bg: rgba(255, 239, 224, 0.86);
+	--primary: #c75146;
+	--primary-dark: #91372f;
+	--accent: #f7a541;
+	--text-main: #321720;
+	--text-muted: #715360;
+	--cell-given-bg: #ffe2ce;
+	--cell-selected-bg: #fff0bf;
+	--cell-related-bg: #fff6ee;
+}
+
+/* <------------------------------------------------
+      BASE PAGE LAYOUT
+   -------------------------------------------------> */
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	color: var(--text-main);
+	background:
+		radial-gradient(circle at top left, rgba(255, 255, 255, 0.28), transparent 28%),
+		linear-gradient(135deg, var(--app-bg), #060912);
+}
+
+button,
+input,
+select {
+	font: inherit;
+}
+
+button {
+	border: 0;
+	cursor: pointer;
+}
+
+button:disabled {
+	cursor: not-allowed;
+	opacity: 0.55;
+}
+
+.app-wrapper {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+	padding: clamp(8px, 1.4vh, 18px) clamp(8px, 1.4vh, 18px) clamp(8px, 1.4vh, 18px) clamp(54px, 7vw, 96px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.side-title {
+	width: 68px;
+	height: 100%;
+	margin-left: -10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: rgba(255, 255, 255, 0.84);
+	font-size: clamp(4.2rem, 13vh, 9rem);
+	font-weight: 900;
+	letter-spacing: 0.12em;
+	line-height: 1;
+	text-transform: uppercase;
+	text-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
+	transform: rotate(-90deg) scaleX(1.25);
+	pointer-events: none;
+}
+
+.game-shell {
+	position: relative;
+	width: min(760px, calc(100vw - 120px));
+	height: min(94vh, 900px);
+	padding: clamp(10px, 1.5vh, 16px);
+	display: grid;
+	grid-template-columns: 0px minmax(0, 1fr);
+	align-items: center;
+	background: rgba(8, 14, 26, 0.78);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: var(--radius-large);
+	box-shadow: var(--shadow-strong);
+	backdrop-filter: blur(18px);
+	overflow: hidden;
+}
+
+/* <------------------------------------------------
+      PANELS AND CARDS
+   -------------------------------------------------> */
+.game-area {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.side-panel {
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	overflow: hidden;
+}
+
+.panel-card,
+.board-panel {
+	background: var(--panel-bg);
+	border: 1px solid var(--border-light);
+	border-radius: var(--radius-medium);
+	box-shadow: var(--shadow-soft);
+}
+
+.panel-card {
+	padding: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.compact-options-card {
+	padding: 4px 6px;
+	gap: 2px;
+	justify-content: flex-start;
+}
+
+.compact-options-card h3 {
+	margin: -2px 0 0;
+	line-height: 1;
+}
+
+.compact-options-card .input-row,
+.compact-options-card .theme-grid {
+	margin-top: 0;
+}
+
+.difficulty-controls {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 6px;
+}
+
+.difficulty-controls select {
+	min-width: 0;
+}
+
+.difficulty-toggles {
+	display: grid;
+	gap: 2px;
+}
+
+.toggle-label {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	color: var(--text-main);
+	font-size: 0.65rem;
+	font-weight: 800;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.toggle-label input {
+	width: 12px;
+	height: 12px;
+	margin: 0;
+	cursor: pointer;
+}
+
+.admin-options-card {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 4px;
+}
+
+.admin-options-card button {
+	width: 100%;
+	margin: 0;
+}
+
+.admin-backup-card {
+	padding: 3px;
+	gap: 3px;
+}
+
+.admin-backup-card button {
+	width: 100%;
+	min-height: 28px;
+	padding: 4px 6px;
+	font-size: 0.78rem;
+}
+
+.panel-card h2 {
+	margin: 0;
+	font-size: 0.85rem;
+}
+
+.panel-card p {
+	margin: 0;
+	color: var(--text-muted);
+	line-height: 1.35;
+}
+
+label {
+	color: var(--text-muted);
+	font-size: 0.75rem;
+	font-weight: 700;
+}
+
+input,
+select {
+	width: 100%;
+	padding: 4px 8px;
+	color: var(--text-main);
+	background: rgba(255, 255, 255, 0.82);
+	border: 1px solid var(--border-light);
+	border-radius: var(--radius-small);
+	outline: none;
+}
+
+input:focus,
+select:focus {
+	border-color: var(--primary);
+	box-shadow: 0 0 0 3px rgba(36, 79, 158, 0.16);
+}
+
+.input-row input {
+	min-width: 0;
+}
+
+/* <------------------------------------------------
+      BUTTONS
+   -------------------------------------------------> */
+button {
+	min-height: 34px;
+	padding: 6px 10px;
+	color: var(--button-text);
+	background: var(--button-bg);
+	border-radius: var(--radius-small);
+	font-weight: 800;
+	transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+	background: var(--button-hover);
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+	transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+	transform: translateY(0);
+}
+
+.icon-button {
+	width: 34px;
+	min-height: 34px;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	font-size: 1.1rem;
+	line-height: 1;
+}
+
+.action-row,
+.input-row {
+	display: flex;
+	gap: 10px;
+}
+
+.theme-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4px;
+}
+
+.theme-button {
+	padding-inline: 8px;
+	font-size: 0.86rem;
+}
+
+.theme-button.active {
+	color: var(--text-main);
+	background: var(--accent);
+}
+
+/* <------------------------------------------------
+      BOARD AREA
+   -------------------------------------------------> */
+.board-panel {
+	width: min(620px, 100%);
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+	margin: 0 auto;
+	padding: clamp(8px, 1vh, 14px);
+	display: grid;
+	grid-template-rows: auto auto minmax(0, 1fr) auto;
+	gap: clamp(5px, 0.8vh, 9px);
+	place-items: center;
+}
+
+.panel-top-row {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.panel-top-row p {
+	margin: 0;
+	color: var(--text-muted);
+	font-size: clamp(1rem, 1.8vh, 1.2rem);
+	font-weight: 900;
+}
+
+.status-bar {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6px;
+	margin-top: -2px;
+}
+
+.status-bar div {
+	padding: 5px 8px;
+	text-align: center;
+	background: rgba(255, 255, 255, 0.52);
+	border: 1px solid var(--border-light);
+	border-radius: var(--radius-small);
+}
+
+.status-label {
+	display: block;
+	margin-bottom: 1px;
+	color: var(--text-muted);
+	font-size: 0.62rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.board-center {
+	width: 100%;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.board-pause-wrapper {
+	position: relative;
+	width: min(100%, 60vh, 560px);
+	max-height: 100%;
+	aspect-ratio: 1 / 1;
+}
+
+.board-pause-wrapper .sudoku-board {
+	width: 100%;
+	height: 100%;
+}
+
+.pause-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #000000;
+	border: 4px solid var(--board-border);
+	border-radius: 10px;
+}
+
+.pause-grid {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+}
+
+.pause-grid span {
+	border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sudoku-board {
+	width: 100%;
+	height: 100%;
+	max-height: 100%;
+	aspect-ratio: 1 / 1;
+	display: grid;
+	grid-template-columns: repeat(9, minmax(0, 1fr));
+	grid-template-rows: repeat(9, minmax(0, 1fr));
+	background: var(--board-border);
+	border: 4px solid var(--board-border);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.sudoku-cell {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--primary-dark);
+	background: var(--cell-bg);
+	border-radius: 0;
+	border-right: 1px solid var(--border-light);
+	border-bottom: 1px solid var(--border-light);
+	font-size: clamp(1.2rem, 4vh, 2.2rem);
+	font-weight: 800;
+	user-select: none;
+}
+
+.sudoku-cell:nth-child(3n) {
+	border-right: 3px solid var(--board-border);
+}
+
+.sudoku-cell:nth-child(n+19):nth-child(-n+27),
+.sudoku-cell:nth-child(n+46):nth-child(-n+54) {
+	border-bottom: 3px solid var(--board-border);
+}
+
+.sudoku-cell.given {
+	color: var(--text-main);
+	background: var(--cell-given-bg);
+}
+
+.sudoku-cell.selected {
+	background: var(--cell-selected-bg);
+}
+
+.sudoku-cell.related {
+	background: var(--cell-related-bg);
+}
+
+.sudoku-cell.error {
+	background: var(--cell-error-bg);
+}
+
+.sudoku-cell.correct {
+	background: var(--cell-correct-bg);
+}
+
+.notes-grid {
+	position: absolute;
+	inset: 4px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+	color: var(--text-muted);
+	font-size: clamp(0.5rem, 1.3vh, 0.72rem);
+	line-height: 1;
+}
+
+.notes-grid span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.bottom-controls {
+	width: 100%;
+	display: grid;
+	gap: 8px;
+}
+
+.number-pad {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(9, 1fr);
+	gap: 7px;
+	margin-top: 2px;
+}
+
+.number-pad button {
+	min-width: 0;
+	min-height: 32px;
+	padding: 4px 0;
+	font-size: clamp(0.9rem, 2vh, 1.15rem);
+}
+
+.action-row {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 6px;
+}
+
+.action-row button {
+	min-height: 32px;
+	padding: 5px 8px;
+	font-size: 0.85rem;
+}
+
+/* <------------------------------------------------
+      MODAL WINDOWS
+   -------------------------------------------------> */
+.modal-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	background: rgba(0, 0, 0, 0.56);
+}
+
+.modal-window {
+	width: min(540px, 94vw);
+	max-height: min(680px, 88vh);
+	display: flex;
+	flex-direction: column;
+	background: var(--modal-bg);
+	border-radius: var(--radius-large);
+	box-shadow: var(--shadow-strong);
+	overflow: hidden;
+}
+
+.compact-modal {
+	width: min(300px, 90vw);
+}
+
+#optionsModal {
+	transform: scale(0.9);
+	transform-origin: center;
+}
+
+#optionsModal .modal-body {
+	overflow: visible;
+	padding-bottom: 8px;
+}
+
+#adminModal {
+	width: min(245px, 86vw);
+	transform: scale(0.9);
+	transform-origin: center;
+}
+
+#adminModal .modal-body {
+	padding: 4px;
+	overflow: visible;
+}
+
+#aboutModal {
+	transform: scale(0.9);
+	transform-origin: center;
+}
+
+#aboutModal .modal-body {
+	padding: 6px 8px;
+	overflow: visible;
+}
+
+#aboutModal .modal-body p {
+	margin: 2px 0;
+	line-height: 1.15;
+}
+
+.about-layout {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.about-logo {
+	width: 90px;
+	height: 90px;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+#statisticsModal {
+	width: min(380px, 92vw);
+	transform: scale(0.9);
+	transform-origin: center;
+}
+
+#statisticsModal .modal-body {
+	padding: 6px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.statistics-grid {
+	display: grid;
+	gap: 6px;
+}
+
+.statistics-section {
+	padding: 6px;
+	background: var(--panel-bg);
+	border: 1px solid var(--border-light);
+	border-radius: var(--radius-small);
+}
+
+.statistics-section h3 {
+	margin: 0 0 4px;
+	font-size: 0.9rem;
+	line-height: 1;
+}
+
+.statistics-section p {
+	margin: 2px 0;
+	font-size: 0.76rem;
+	line-height: 1.15;
+}
+
+.game-over-buttons {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 6px;
+	margin-top: 8px;
+}
+
+#gameOverModal .modal-body {
+	padding: 8px;
+}
+
+#gameOverModal .modal-body p {
+	margin: 0;
+	line-height: 1.25;
+	text-align: center;
+}
+
+.modal-header {
+	padding: 8px 12px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	background: var(--primary);
+	color: #ffffff;
+}
+
+.modal-header h2 {
+	margin: 0;
+	font-size: 1.1rem;
+}
+
+.modal-close-button {
+	width: 30px;
+	min-height: 30px;
+	padding: 0;
+	background: rgba(255, 255, 255, 0.2);
+	font-size: 1.3rem;
+	line-height: 1;
+}
+
+.modal-body {
+	padding: 10px;
+	overflow: auto;
+}
+
+#helpModal {
+	height: min(700px, 92vh);
+}
+
+#helpModal .modal-body {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.modal-body p {
+	line-height: 1.45;
+}
+
+.help-accordion {
+	display: grid;
+	gap: 6px;
+}
+
+.help-accordion details {
+	background: var(--panel-bg);
+	border: 1px solid var(--border-light);
+	border-radius: var(--radius-small);
+	overflow: visible;
+}
+
+.help-accordion details[open] p {
+	display: block;
+}
+
+.help-accordion summary {
+	padding: 8px 10px;
+	color: var(--button-text);
+	background: var(--primary);
+	font-size: 0.9rem;
+	font-weight: 800;
+	cursor: pointer;
+	user-select: none;
+}
+
+.help-accordion details[open] summary {
+	background: var(--primary-dark);
+}
+
+.help-accordion p {
+	margin: 0;
+	padding: 8px 10px;
+	line-height: 1.3;
+}
+
+.hidden,
+.hidden-file-input {
+	display: none !important;
+}
+
+/* <------------------------------------------------
+      RESPONSIVE LAYOUT
+   -------------------------------------------------> */
+@media (max-width: 1050px) {
+	.game-area {
+		grid-template-columns: 1fr 1.6fr;
+		grid-template-rows: auto auto;
+	}
+
+	.board-panel {
+		grid-row: span 2;
+	}
+
+	.right-panel {
+		grid-column: 1;
+	}
+}
+
+@media (max-width: 760px) {
+	.game-shell {
+		overflow: auto;
+	}
+
+	html,
+	body {
+		overflow: hidden;
+	}
+
+	.app-header,
+	.app-footer {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.header-actions {
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.game-area {
+		grid-template-columns: 1fr;
+	}
+
+	.board-panel {
+		grid-row: auto;
+	}
+
+	.sudoku-board {
+		width: min(100%, 82vw, 520px);
+	}
+
+	.number-pad {
+		grid-template-columns: repeat(9, minmax(28px, 1fr));
+	}
+
+	.action-row,
+	.status-bar {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-height: 720px) and (min-width: 761px) {
+	.game-shell {
+		padding: 10px;
+		gap: 8px;
+	}
+
+	.panel-card {
+		padding: 10px;
+		gap: 8px;
+	}
+
+	button {
+		min-height: 36px;
+		padding-block: 8px;
+	}
+
+	.title-block h1 {
+		font-size: 2rem;
+	}
+
+	.sudoku-board {
+		width: min(100%, 54vh, 480px);
+	}
+}

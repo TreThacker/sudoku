@@ -1,0 +1,329 @@
+<!--
+App Title: Sudoku
+Credits: Tre Thacker
+Year Created: 2026
+Version: 1.00
+Dedication: None
+-->
+
+<!-- <------------------------------------------------
+			CHANGELOG
+
+			Version 1.00 - Initial game creation.
+		 ------------------------------------------------->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sudoku</title>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">	
+	<link rel="stylesheet" href="styles.css">	
+</head>
+<body>
+<!-- <------------------------------------------------
+			APP WRAPPER
+		 ------------------------------------------------->
+	<div class="app-wrapper" id="appWrapper">
+		<div class="game-shell">
+			<div class="side-title" aria-hidden="true">Sudoku</div>
+
+<!-- <------------------------------------------------
+			MAIN GAME AREA
+		 ------------------------------------------------->
+			<main class="game-area">
+				<section class="board-panel" aria-label="Sudoku board">
+					<div class="panel-top-row">
+						<p id="playerDisplay">Player: Guest</p>
+						<button class="icon-button" id="optionsButton" type="button" aria-label="Options">⚙</button>
+					</div>
+
+					<div class="status-bar">
+						<div>
+							<span class="status-label">Difficulty</span>
+							<strong id="difficultyDisplay">Medium</strong>
+						</div>
+						<div>
+							<span class="status-label">Time</span>
+							<strong id="timerDisplay">00:00</strong>
+						</div>
+						<div>
+							<span class="status-label">Mistakes</span>
+							<strong id="mistakeDisplay">0 / 3</strong>
+						</div>
+					</div>
+
+					<div class="board-center">
+						<div class="board-pause-wrapper">
+							<div class="sudoku-board" id="sudokuBoard" aria-label="Sudoku puzzle grid"></div>
+
+							<div class="pause-overlay hidden" id="pauseOverlay" aria-hidden="true">
+								<div class="pause-grid">
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="bottom-controls">
+						<div class="number-pad" id="numberPad" aria-label="Number pad">
+							<button type="button" data-number="1">1</button>
+							<button type="button" data-number="2">2</button>
+							<button type="button" data-number="3">3</button>
+							<button type="button" data-number="4">4</button>
+							<button type="button" data-number="5">5</button>
+							<button type="button" data-number="6">6</button>
+							<button type="button" data-number="7">7</button>
+							<button type="button" data-number="8">8</button>
+							<button type="button" data-number="9">9</button>
+						</div>
+
+						<div class="action-row">
+							<button id="noteModeButton" type="button" aria-pressed="false">Notes: Off</button>
+							<button id="eraseButton" type="button">Erase</button>
+							<button id="hintButton" type="button">Hint</button>
+							<button id="pauseButton" type="button">Pause</button>
+						</div>
+					</div>
+				</section>
+			</main>
+		</div>
+	</div>
+
+<!-- <------------------------------------------------
+			MODAL WINDOWS
+		 ------------------------------------------------->
+	<div class="modal-backdrop hidden" id="modalBackdrop">
+		<section class="modal-window compact-modal hidden" id="optionsModal" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
+			<div class="modal-header">
+				<h2 id="optionsTitle">Options</h2>
+				<button class="modal-close-button" type="button" data-close-modal>×</button>
+			</div>
+			<div class="modal-body">
+				<div class="options-grid">
+					<div class="panel-card player-options-card compact-options-card">
+						<h3>Player</h3>
+						<div class="input-row">
+							<input id="playerNameInput" type="text" maxlength="24" placeholder="Enter name">
+							<button id="savePlayerButton" type="button">Save</button>
+						</div>
+					</div>
+
+					<div class="panel-card difficulty-options-card compact-options-card">
+						<h3>Difficulty</h3>
+
+						<div class="difficulty-controls">
+							<select id="difficultySelect">
+								<option value="easy">Easy</option>
+								<option value="medium" selected>Medium</option>
+								<option value="hard">Hard</option>
+							</select>
+
+							<div class="difficulty-toggles">
+								<label class="toggle-label">
+									<input id="clockToggle" type="checkbox" checked>
+									Clock
+								</label>
+
+								<label class="toggle-label">
+									<input id="mistakesToggle" type="checkbox" checked>
+									Mistakes
+								</label>
+							</div>
+						</div>
+
+						<button id="newGameButton" type="button">New Game</button>
+					</div>
+
+					<div class="panel-card theme-options-card compact-options-card">
+						<h3>Theme</h3>
+						<div class="theme-grid" role="group" aria-label="Theme selection">
+							<button class="theme-button active" id="themeClassicButton" type="button" data-theme="classic">Classic</button>
+							<button class="theme-button" id="themeOceanButton" type="button" data-theme="ocean">Ocean</button>
+							<button class="theme-button" id="themeSunsetButton" type="button" data-theme="sunset">Sunset</button>
+						</div>
+					</div>
+
+					<div class="panel-card admin-options-card compact-options-card">
+						<button id="adminButton" type="button">Admin</button>
+						<button id="statisticsButton" type="button">Statistics</button>
+						<button id="helpButton" type="button">Help</button>
+						<button id="aboutButton" type="button">About</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="modal-window compact-modal hidden" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+			<div class="modal-header">
+				<h2 id="adminTitle">Admin</h2>
+				<button class="modal-close-button" type="button" data-close-modal>×</button>
+			</div>
+			<div class="modal-body">
+				<div class="panel-card">
+					<button id="exportBackupButton" type="button">Export Backup</button>
+					<button id="importBackupButton" type="button">Import Backup</button>
+					<input class="hidden-file-input" id="importBackupInput" type="file" accept=".json,application/json">
+				</div>
+			</div>
+		</section>
+
+		<section class="modal-window hidden" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+			<div class="modal-header">
+				<h2 id="helpTitle">Help</h2>
+				<button class="modal-close-button" type="button" data-close-modal>×</button>
+			</div>
+			<div class="modal-body help-accordion">
+				<details>
+					<summary>Starting a Game</summary>
+					<p>Open Options, choose a difficulty, then select New Game. The puzzle will begin immediately and your progress will save automatically.</p>
+				</details>
+
+				<details>
+					<summary>Difficulty Levels</summary>
+					<p>Easy allows up to 7 mistakes. Medium allows up to 5 mistakes. Hard allows up to 3 mistakes and disables the Hint feature. Turning Clock or Mistakes off changes the displayed difficulty to Custom.</p>
+				</details>
+
+				<details>
+					<summary>Playing the Puzzle</summary>
+					<p>Select an empty square, then choose a number from the number buttons. You can also use your keyboard number keys.</p>
+				</details>
+
+				<details>
+					<summary>Notes Mode</summary>
+					<p>Use Notes Mode when you want to mark possible answers in a square before choosing the final number.</p>
+				</details>
+				
+				<details>
+					<summary>Clock and Mistakes</summary>
+					<p>The Clock and Mistakes options can be enabled or disabled independently. When either option is turned off, the game is considered a Custom game. Clock Off disables the timer. Mistakes Off removes the mistake limit.</p>
+				</details>				
+
+				<details>
+					<summary>Erase, Hint, and Pause</summary>
+					<p>Erase clears the selected square. Hint fills one correct answer and is disabled on Hard difficulty. Pause hides the board and pauses the timer until you resume play.</p>
+				</details>
+				
+				<details>
+					<summary>Game Over</summary>
+					<p>If Mistakes are enabled and you reach the maximum mistake limit for the current difficulty, the game ends immediately. The board becomes read-only, the timer stops, and the game is recorded as a loss.</p>
+				</details>				
+
+				<details>
+					<summary>Automatic Saving</summary>
+					<p>The game saves automatically as you play. If you refresh the browser, the puzzle should reopen where you left off.</p>
+				</details>
+				
+				<details>
+					<summary>Statistics</summary>
+					<p>The Statistics window tracks games played, wins, losses, fastest times, streaks, hints used, mistakes made, valid numbers played, erases used, and other gameplay records.</p>
+				</details>				
+
+				<details>
+					<summary>Import and Export Backups</summary>
+					<p>Use the Admin window to export a backup file or import a backup file. Backup imports must match the current game version to protect your data.</p>
+				</details>
+
+				<details>
+					<summary>Achievements, Coins, and Store</summary>
+					<p>Coming soon!</p>
+				</details>
+			</div>
+		</section>
+
+		<section class="modal-window compact-modal hidden" id="gameOverModal" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+			<div class="modal-header">
+				<h2 id="gameOverTitle">Game Over</h2>
+			</div>
+
+			<div class="modal-body">
+				<p id="gameOverMessage">
+					You have reached the maximum mistake limit for this game.
+				</p>
+
+				<div class="game-over-buttons">
+					<button id="gameOverNewGameButton" type="button">New Game</button>
+					<button id="gameOverCloseButton" type="button">Close</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="modal-window compact-modal hidden" id="statisticsModal" role="dialog" aria-modal="true" aria-labelledby="statisticsTitle">
+			<div class="modal-header">
+				<h2 id="statisticsTitle">Statistics</h2>
+				<button class="modal-close-button" type="button" data-close-modal>×</button>
+			</div>
+			<div class="modal-body">
+				<div class="statistics-grid" id="statisticsContent">
+					<div class="statistics-section">
+						<h3>Overall</h3>
+						<p><strong>Games Played:</strong> <span id="statsGamesPlayed">0</span></p>
+						<p><strong>Games Won:</strong> <span id="statsGamesWon">0</span></p>
+						<p><strong>Games Lost:</strong> <span id="statsGamesLost">0</span></p>
+						<p><strong>Win Percentage:</strong> <span id="statsWinPercentage">0%</span></p>
+					</div>
+
+					<div class="statistics-section">
+						<h3>Difficulty</h3>
+						<p><strong>Easy:</strong> <span id="statsEasyRecord">0 played / 0 won / 0 lost</span></p>
+						<p><strong>Medium:</strong> <span id="statsMediumRecord">0 played / 0 won / 0 lost</span></p>
+						<p><strong>Hard:</strong> <span id="statsHardRecord">0 played / 0 won / 0 lost</span></p>
+						<p><strong>Custom:</strong> <span id="statsCustomRecord">0 played / 0 won / 0 lost</span></p>
+					</div>
+
+					<div class="statistics-section">
+						<h3>Time</h3>
+						<p><strong>Fastest Easy:</strong> <span id="statsFastestEasy">--:--</span></p>
+						<p><strong>Fastest Medium:</strong> <span id="statsFastestMedium">--:--</span></p>
+						<p><strong>Fastest Hard:</strong> <span id="statsFastestHard">--:--</span></p>
+						<p><strong>Fastest Custom:</strong> <span id="statsFastestCustom">--:--</span></p>
+						<p><strong>Average Time:</strong> <span id="statsAverageTime">--:--</span></p>
+					</div>
+
+					<div class="statistics-section">
+						<h3>Gameplay</h3>
+						<p><strong>Hints Used:</strong> <span id="statsHintsUsed">0</span></p>
+						<p><strong>Mistakes Made:</strong> <span id="statsMistakesMade">0</span></p>
+						<p><strong>Valid Numbers Played:</strong> <span id="statsValidNumbersPlayed">0</span></p>
+						<p><strong>Total Erases Used:</strong> <span id="statsTotalErasesUsed">0</span></p>
+						<p><strong>Perfect Games:</strong> <span id="statsPerfectGames">0</span></p>
+					</div>
+
+					<div class="statistics-section">
+						<h3>Streaks</h3>
+						<p><strong>Current Win Streak:</strong> <span id="statsCurrentWinStreak">0</span></p>
+						<p><strong>Best Win Streak:</strong> <span id="statsBestWinStreak">0</span></p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="modal-window compact-modal hidden" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+			<div class="modal-header">
+				<h2 id="aboutTitle">About</h2>
+				<button class="modal-close-button" type="button" data-close-modal>×</button>
+			</div>
+			<div class="modal-body about-layout">
+				<div id="aboutContent"></div>
+
+				<img
+					class="about-logo"
+					src="image/icon/icon-512.webp"
+					alt="Sudoku Icon">
+			</div>
+		</section>
+	</div>
+
+	<script src="app.js"></script>
+</body>
+</html>
