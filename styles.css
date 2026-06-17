@@ -817,11 +817,11 @@ button:active:not(:disabled) {
 
 	.game-shell {
 		width: min(1040px, calc(100vw - 32px));
-		grid-template-columns: 58px minmax(0, 1fr) 58px;
+		grid-template-columns: 82px minmax(0, 1fr) 82px;
 	}
 
 	.side-title {
-		width: 58px;
+		width: 82px;
 		margin-left: 0;
 	}
 
@@ -830,11 +830,11 @@ button:active:not(:disabled) {
 	}
 
 	.board-panel {
-		width: min(760px, 100%);
+		width: min(780px, 100%);
 	}
 
 	.board-pause-wrapper {
-		width: min(100%, 68vh, 640px);
+		width: min(100%, 70vh, 660px);
 	}
 }
 	 
@@ -919,5 +919,36 @@ button:active:not(:disabled) {
 
 	.sudoku-board {
 		width: min(100%, 54vh, 480px);
+	}
+}
+
+/* <------------------------------------------------
+      FULL SCREEN APP VIEW SUPPORT
+   -------------------------------------------------> */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+	.app-wrapper {
+		padding: clamp(8px, 1vh, 14px) clamp(10px, 1.8vw, 24px);
+	}
+
+	.game-shell {
+		width: min(1120px, calc(100vw - 32px));
+		grid-template-columns: 82px minmax(0, 1fr) 82px;
+	}
+
+	.side-title {
+		width: 82px;
+		margin-left: 0;
+	}
+
+	.game-area {
+		grid-column: 2;
+	}
+
+	.board-panel {
+		width: min(820px, 100%);
+	}
+
+	.board-pause-wrapper {
+		width: min(100%, 72vh, 700px);
 	}
 }
