@@ -799,6 +799,53 @@ button:active:not(:disabled) {
 /* <------------------------------------------------
       RESPONSIVE LAYOUT
    -------------------------------------------------> */
+/* <------------------------------------------------
+      TABLET SUPPORT
+   -------------------------------------------------> */
+@media (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
+	:root {
+		--tablet-selected-bg: #244f9e;
+		--tablet-selected-text: #ffffff;
+	}
+
+	body.theme-ocean {
+		--tablet-selected-bg: #055863;
+		--tablet-selected-text: #ffffff;
+	}
+
+	body.theme-sunset {
+		--tablet-selected-bg: #91372f;
+		--tablet-selected-text: #ffffff;
+	}
+
+	.app-wrapper {
+		padding: clamp(8px, 1.2vh, 14px) clamp(10px, 2vw, 24px);
+	}
+
+	.game-shell {
+		width: min(980px, calc(100vw - 32px));
+		grid-template-columns: 58px minmax(0, 1fr);
+	}
+
+	.side-title {
+		width: 58px;
+		margin-left: 0;
+	}
+
+	.board-panel {
+		width: min(760px, 100%);
+	}
+
+	.board-pause-wrapper {
+		width: min(100%, 68vh, 640px);
+	}
+
+	.sudoku-cell.selected {
+		color: var(--tablet-selected-text);
+		background: var(--tablet-selected-bg);
+	}
+}	 
+	 
 @media (max-width: 1050px) {
 	.game-area {
 		grid-template-columns: 1fr 1.6fr;
