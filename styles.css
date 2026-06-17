@@ -430,7 +430,7 @@ button:active:not(:disabled) {
 
 .board-pause-wrapper {
 	position: relative;
-	width: min(100%, calc(100vh - 230px), 560px);
+	width: min(100%, calc(100vh - 245px), 545px);
 	max-height: 100%;
 	aspect-ratio: 1 / 1;
 }
@@ -937,7 +937,7 @@ button:active:not(:disabled) {
 
 	.side-title {
 		width: 82px;
-		margin-left: 0;
+		margin-left: 20px;
 	}
 
 	.game-area {
@@ -949,6 +949,6 @@ button:active:not(:disabled) {
 	}
 
 	.board-pause-wrapper {
-		width: min(100%, 60vh, 560px);
+		width: min(100%, 64vh, 590px);
 	}
 }
