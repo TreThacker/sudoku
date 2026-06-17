@@ -93,6 +93,17 @@ let gameState = createDefaultGameState();
       APPLICATION STARTUP
    -------------------------------------------------> */
 document.addEventListener("DOMContentLoaded", initializeApplication);
+registerServiceWorker();
+
+function registerServiceWorker() {
+	if (!("serviceWorker" in navigator)) {
+		return;
+	}
+
+	window.addEventListener("load", () => {
+		navigator.serviceWorker.register("./service-worker.js");
+	});
+}
 
 async function initializeApplication() {
 	database = await openDatabase();
